@@ -1,0 +1,134 @@
+<!doctype html>
+<html class="no-js" lang="">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title></title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <!--     BootStrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+    crossorigin="anonymous">
+  <link rel="manifest" href="site.webmanifest">
+  <link rel="apple-touch-icon" href="icon.png">
+  <!-- Place favicon.ico in the root directory -->
+
+  <script src="https:/d3js.org/d3.v4.js"></script>
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/main.css">
+</head>
+
+<body>
+  <!--[if lte IE 9]>
+    <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience and security.</p>
+  <![endif]-->
+
+  <!-- Add your site or application content here -->
+  <main class="container">
+    <h1 class="text-center">Energy required to change H<sub>2</sub>0 temperature</h1>
+    <table>
+      <!-- energy unit radio button -->
+      <tr>
+        <td align="right">
+          Energy units:
+        </td>
+        <td>
+          <div class="pad-cell">
+            <input type="radio" name="energyType" id="calRadio" checked> Calories</input>
+          </div>
+        </td>
+        <td>
+          <div class="pad-cell">
+            <input type="radio" name="energyType" id="JRadio"> Joules</input>
+          </div>
+        </td>
+      </tr>
+      <!-- temp unit radio button -->
+      <tr>
+        <td align="right">
+          Temperature units:
+        </td>
+        <td>
+          <div class="pad-cell">
+            <input type="radio" name="tempType" id="CRadio" checked>
+            Celsius</input>
+          </div>
+        </td>
+        <td>
+          <div class="pad-cell">
+            <input type="radio" name="tempType" id="FRadio"> Fahrenheit</input>
+          </div>
+        </td>
+      </tr>
+    </table>
+    <br />
+
+    <!-- Mass of water input -->
+    <div class="inputs-section">
+      <div class="input-group mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="basic-addon1">Mass of water:</span>
+        </div>
+        <input type="text" class="form-control" id="mass" placeholder="grams" aria-label="Username" aria-describedby="basic-addon1" />
+        <span> g</span>
+        <!-- initial temp input -->
+      </div>
+      </br>
+      <div class="input-group mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="basic-addon1">Initial Temp:</span>
+        </div>
+        <input type="text" class="form-control" id="initialTemp" placeholder="°C" aria-label="Celcius" aria-describedby="basic-addon1" />
+        <span class="tempTypeDisplay"> °C</span>
+      </div>
+      <!-- final temp input -->
+      <div class="input-group mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="basic-addon1">Final Temp:</span>
+        </div>
+        <input type="text" class="form-control" id="finalTemp" placeholder="°C" aria-label="Celcius" aria-describedby="basic-addon1" />
+        <span class="tempTypeDisplay"> °C</span>
+      </div>
+    </div>
+    <!-- Calculate button -->
+    <button type="submit" class="btn btn-secondary">Calculate</button>
+    <div class="result"> </div>
+  </main>
+  <br />
+
+  <aside class="container">
+    <h4>Procedure:</h4>
+    <ul style="list-style: none;">
+      <li> Where q = heat energy, m = mass, c = specific heat, ΔT = change in temperature, ΔH<sub>f</sub> = heat of
+        fusion, ΔH<sub>v</sub> = heat of vaporization: </li>
+      <li>Step 1: q = m·c·ΔT<sub>(ice)</sub></li>
+      <li>Step 2: q = m·ΔH<sub>f</sub></li>
+      <li>Step 3: q = m·c·ΔT<sub>(water)</sub></li>
+      <li>Step 4: q = m·ΔH<sub>v</sub></li>
+      <li>Step 5: q = m·c·ΔT<sub>(steam)</sub></li>
+      <li>Step 6: Heat<sub>Total</sub> = Heat<sub>Step 1</sub> + Heat<sub>Step 2</sub> + Heat<sub>Step 3</sub> + Heat<sub>Step
+          4</sub> + Heat<sub>Step 5</sub></li>
+    </ul>
+
+    <h4>Useful information:</h4>
+    <ul>
+      <li>heat of fusion of water = 334 J/gK</li>
+      <li>heat of vaporization of water = 2257 J/g</li>
+      <li>specific heat of ice = 2.09 J/g·°C</li>
+      <li>specific heat of water = 4.18 J/g·°C</li>
+      <li>specific heat of steam = 2.09 J/g·°C</li>
+      <li>1 Joule = 0.239006 calorie</li>
+      <li>(°F − 32) × 5/9 = °C</li>
+    </ul>
+  </aside>
+
+  <!-- <script src="js/vendor/modernizr-3.6.0.min.js"></script> -->
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+    crossorigin="anonymous"></script>
+  <script>window.jQuery || document.write('<script src="js/vendor/jquery-3.3.1.min.js"><\/script>')</script>
+  <script src="js/plugins.js"></script>
+  <script src="js/main.js"></script>
+</body>
+
+</html>
