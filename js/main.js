@@ -55,9 +55,9 @@ function calculate(){
             finalTemp = convertToCelsius(finalTemp);
         }
 
-        let iceDiff = 0;
-        let waterDiff = 0;
-        let steamDiff = 0; // initialized to zero to prevent undefined errors//////////////////////////////////
+        let iceDiff;
+        let waterDiff;
+        let steamDiff;
     /* Calculate temperature variation for each phase */
         //Keep lower value as initial temp since calculation is symmetrical
         if(initialTemp > finalTemp){
