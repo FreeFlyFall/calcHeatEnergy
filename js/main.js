@@ -55,21 +55,22 @@ function calculate(){
             finalTemp = convertToCelsius(finalTemp);
         }
 
-        let iceDiff;
-        let waterDiff;
-        let steamDiff;
+        let iceDiff = 0;
+        let waterDiff = 0;
+        let steamDiff = 0; // initialized to zero to prevent undefined errors//////////////////////////////////
     /* Calculate temperature variation for each phase */
         //Keep lower value as initial temp since calculation is symmetrical
         if(initialTemp > finalTemp){
             [initialTemp, finalTemp] = [finalTemp, initialTemp];
         }
-        //calculate degree change as steam
-        if(initialTemp < 0){
+        // calculate heat change per phase
+        if(initialTemp < 0 && finalTemp < 0){
+            iceDiff = finalTemp - initialTemp;
+        } else if(initialTemp < 0){
             iceDiff = -initialTemp;
         } else{
             iceDiff = 0;
         }
-        //calculate degree change as water
         if(finalTemp <= 100){
             if(initialTemp > 0){
                 waterDiff = finalTemp - initialTemp;
@@ -78,14 +79,22 @@ function calculate(){
             }
             steamDiff = 0
         }
-        //calculate degree change as steam
-        else if(finalTemp > 100){
-            if(initialTemp > 0){
+        if(finalTemp > 100){
+            if(initialTemp > 100){
+                waterDiff = 0;
+                steamDiff  = finalTemp - initialTemp
+                }
+            else if(initialTemp > 0){
                 waterDiff = 100 - initialTemp;
             } else{
-                waterDiff =100;
+                waterDiff = 100;
             }
-            steamDiff = finalTemp - 100;
+            if (initialTemp < 100){
+                steamDiff = finalTemp - 100;
+            }
+        }
+        if(finalTemp < 0){
+            waterDiff = 0;
         }
 
         // Round to 2 places for display
@@ -109,6 +118,7 @@ function calculate(){
     }
     catch(err){
         $(".result").text("error");
+        console.log(err);
     }
 }
 
