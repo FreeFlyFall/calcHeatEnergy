@@ -27,42 +27,52 @@
   <!-- Add your site or application content here -->
   <main class="container">
     <h1 class="text-center">Energy required to change H<sub>2</sub>O temperature</h1>
-    <table>
-      <!-- energy unit radio button -->
-      <tr>
-        <td align="right">
-          Energy units:
-        </td>
-        <td>
-          <div class="pad-cell">
-            <input type="radio" name="energyType" id="calRadio" checked> Calories</input>
-          </div>
-        </td>
-        <td>
-          <div class="pad-cell">
-            <input type="radio" name="energyType" id="JRadio"> Joules</input>
-          </div>
-        </td>
-      </tr>
+    <div class="flex-container">
+      <div class="unit first-unit">
+        <table>
+          <!-- energy unit radio button -->
+          <tr>
+            <td align="center" colspan="2">
+              <strong>Energy units:</strong>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div>
+                <input type="radio" name="energyType" id="calRadio" checked> Calories</input>
+              </div>
+            </td>
+            <td>
+              <div class="pad-cell">
+                <input type="radio" name="energyType" id="JRadio"> Joules</input>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </div>
       <!-- temp unit radio button -->
-      <tr>
-        <td align="right">
-          Temperature units:
-        </td>
-        <td>
-          <div class="pad-cell">
-            <input type="radio" name="tempType" id="CRadio" checked>
-            Celsius</input>
-          </div>
-        </td>
-        <td>
-          <div class="pad-cell">
-            <input type="radio" name="tempType" id="FRadio"> Fahrenheit</input>
-          </div>
-        </td>
-      </tr>
-    </table>
-    <br />
+      <div class="unit">
+        <table>
+          <tr>
+            <td align="center" colspan="2">
+              <strong>Temperature units:</strong>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div>
+                <input type="radio" name="tempType" id="CRadio" checked> Celsius</input>
+              </div>
+            </td>
+            <td>
+              <div class="pad-cell">
+                <input type="radio" name="tempType" id="FRadio"> Fahrenheit</input>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
 
     <!-- Mass of water input -->
     <div class="inputs-section">
@@ -94,7 +104,6 @@
     <button type="submit" class="btn btn-secondary">Calculate</button>
     <div class="result"> </div>
   </main>
-  <br />
 
   <aside class="container">
     <h4>Procedure:</h4>
