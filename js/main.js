@@ -7,7 +7,6 @@ if (!window.performance) {
 }
 
 if (window.performance.navigation.type == 1){
-    console.log()
     if($("input[id='JRadio']:checked").val() == "on"){
         energyUnits = 'J';
     }
