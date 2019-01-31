@@ -12,6 +12,14 @@ if (window.performance.navigation.type == 1){
     }
     if($("input[id='FRadio']:checked").val() == "on"){
         tempUnits = 'F';
+        $(".tempTypeDisplay").text(" °F");
+        $("#initialTemp").attr("placeholder", "°F");
+        $("#finalTemp").attr("placeholder", "°F");
+    } else if($("input[id='KRadio']:checked").val() == "on"){
+        tempUnits = 'K'
+        $(".tempTypeDisplay").text(" °K")
+        $("#initialTemp").attr("placeholder", "°K");
+        $("#finalTemp").attr("placeholder", "°K");
     }
 }
 
@@ -36,6 +44,12 @@ $("input[id=CRadio]").click(function(){
     $("#initialTemp").attr("placeholder", "°C");
     $("#finalTemp").attr("placeholder", "°C");
     tempUnits = 'C'
+});
+$("input[id=KRadio]").click(function(){
+    $(".tempTypeDisplay").text(" °K")
+    $("#initialTemp").attr("placeholder", "°K");
+    $("#finalTemp").attr("placeholder", "°K");
+    tempUnits = 'K'
 });
 $("input[id=calRadio]").click(function(){
     energyUnits = 'cal'
