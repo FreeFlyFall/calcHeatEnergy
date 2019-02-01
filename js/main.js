@@ -64,10 +64,12 @@ function calculate(){
         let initialTemp = parseFloat($("#initialTemp").val());
         let finalTemp = parseFloat($("#finalTemp").val());
         if(tempUnits == 'F'){
-            initialTemp = convertToCelsius(initialTemp);
-            finalTemp = convertToCelsius(finalTemp);
+            initialTemp = convertToCelsius(initialTemp, tempUnits);
+            finalTemp = convertToCelsius(finalTemp, tempUnits);
+        } else if(tempUnits == 'K'){
+            initialTemp = convertToCelsius(initialTemp, tempUnits);
+            finalTemp = convertToCelsius(finalTemp, tempUnits);
         }
-
         let iceDiff;
         let waterDiff;
         let steamDiff;
@@ -75,6 +77,10 @@ function calculate(){
         //Keep lower value as initial temp since calculation is symmetrical
         if(initialTemp > finalTemp){
             [initialTemp, finalTemp] = [finalTemp, initialTemp];
+        }
+        if(initialTemp < -273.15){
+            $(".result").text("Error: Lower temperature is below absolute zero");
+            return;
         }
         // calculate heat change per phase
         if(initialTemp < 0 && finalTemp < 0){
@@ -116,18 +122,64 @@ function calculate(){
         let iceDiffr = iceDiff.toFixed(2);
         let waterDiffr = waterDiff.toFixed(2);
         let steamDiffr = steamDiff.toFixed(2);
-
-        // Display temp changes per phase
-        console.log(`Min: ${initialTempr} °C, Max: ${finalTempr} °C \n\nChange as ice: ${iceDiffr} °C \nChange as water: ${waterDiffr} °C \nChange as steam: ${steamDiffr} °C`);
-
         if(energyUnits == 'J'){
-            energyDiff = getEnergyDiff(mass, iceDiff, waterDiff, steamDiff).toFixed(2);
-            display = delimitNumbers(energyDiff);
-        } else{
-            energyDiff = (getEnergyDiff(mass, iceDiff, waterDiff, steamDiff) / 0.239006).toFixed(2);
-            display = delimitNumbers(energyDiff);
+            var hfwt = mass * 334;
+            var hvwt = mass * 2257;
+            var hit = iceDiff * mass * 2.09;
+            var hwt = waterDiff * mass * 4.18;
+            var hst = steamDiff * mass * 2.09;
+            var hfwtr = (mass * 334).toFixed(2);
+            var hvwtr = (mass * 2257).toFixed(2);
+            var hitr = (iceDiff * mass * 2.09).toFixed(2);
+            var hwtr = (waterDiff * mass * 4.18).toFixed(2);
+            var hstr = (steamDiff * mass * 2.09).toFixed(2);
+        } else {
+            var hfwt = mass * 334 * 0.239006;
+            var hvwt = mass * 2257 * 0.239006;
+            var hit = iceDiff * mass * 2.09 * 0.239006;
+            var hwt = waterDiff * mass * 4.18 * 0.239006;
+            var hst = steamDiff * mass * 2.09 * 0.239006;
+            var hfwtr = (mass * 334 * 0.239006).toFixed(2);
+            var hvwtr = (mass * 2257 * 0.239006).toFixed(2);
+            var hitr = (iceDiff * mass * 2.09 * 0.239006).toFixed(2);
+            var hwtr = (waterDiff * mass * 4.18 * 0.239006).toFixed(2);
+            var hstr = (steamDiff * mass * 2.09 * 0.239006).toFixed(2);
         }
-        $(".result").html(`<div>Energy: ${display} ${energyUnits}</div><br /><div>Min: ${initialTempr} °C, Max: ${finalTempr} °C </div><br /><div>Change as ice: ${iceDiffr} °C</div><div>Change as water: ${waterDiffr} °C</div><div>Change as steam: ${steamDiffr} °C</div>`);
+
+        let energyDiff;
+        let energyTotal;
+        if(energyUnits == 'J'){
+            energyDiff = (hit + hfwt + hwt + hvwt + hst).toFixed(2);
+            energyTotal = delimitNumbers(energyDiff);
+            var sh = {
+                i: 2.09,
+                w: 4.18,
+                s: 2.09
+            }
+        } else{
+            energyDiff = ((hit + hfwt + hwt + hvwt + hst) * 0.239006).toFixed(2);
+            energyTotal = delimitNumbers(energyDiff);
+            var sh = {
+                i: (2.09 * 0.239006).toFixed(2),
+                w: (4.18 * 0.239006).toFixed(2),
+                s: (2.09 * 0.239006).toFixed(2)
+            }
+        }
+        $(".result").html(`
+            <ul style="list-style: none;">
+                <div class="cmb"><strong>Energy: ${energyTotal} ${energyUnits}</strong></div>
+                <div class="cmb">Min: ${initialTempr} °C, Max: ${finalTempr} °C </div>
+                <div>ΔT as ice: ${iceDiffr} °C</div>
+                <div>ΔT as water: ${waterDiffr} °C</div>
+                <div class="cmb">ΔT as steam: ${steamDiffr} °C</div>
+                <div>Step 1: ${hitr} = ${iceDiffr} · ${mass} · ${sh.i}</div>
+                <div>Step 2: ${hfwtr} = ${mass} · 334</div>
+                <div>Step 3: ${hwtr} = ${waterDiffr} · ${mass} · ${sh.w}</div>
+                <div>Step 4: ${hvwtr} = ${mass} · 2257</div>
+                <div>Step 5: ${hstr} = ${steamDiffr} · ${mass} · ${sh.s}</div>
+                <div>Step 6: <strong>${energyTotal} ${energyUnits}</strong> = ${hitr} + ${hfwtr} + ${hwtr} + ${hvwtr} + ${hstr}</div>
+            </ul>
+        `);
     }
     catch(err){
         $(".result").text("error");
@@ -136,12 +188,12 @@ function calculate(){
 }
 
 //functions
-function convertToCelsius(temp){
-    return (temp - 32) * (5 / 9);
-}
-
-function getEnergyDiff(mass, iceDiff, waterDiff, steamDiff){
-    return mass * 334 + mass * 2257 + (iceDiff * mass * 2.09) + (waterDiff * mass * 4.18) + (steamDiff * mass * 2.09);
+function convertToCelsius(temp, tempUnits){
+    if(tempUnits == 'F'){
+        return (temp - 32) * (5 / 9);
+    } else if(tempUnits == 'K'){
+        return (temp - 273.15);
+    }
 }
 
 function delimitNumbers(str) {
