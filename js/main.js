@@ -157,7 +157,7 @@ function calculate(){
                 s: 2.09
             }
         } else{
-            energyDiff = ((hit + hfwt + hwt + hvwt + hst) * 0.239006).toFixed(2);
+            energyDiff = (hit + hfwt + hwt + hvwt + hst).toFixed(2);
             energyTotal = delimitNumbers(energyDiff);
             var sh = {
                 i: (2.09 * 0.239006).toFixed(2),
