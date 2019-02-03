@@ -11,15 +11,9 @@ if (window.performance.navigation.type == 1){
         energyUnits = 'J';
     }
     if($("input[id='FRadio']:checked").val() == "on"){
-        tempUnits = 'F';
-        $(".tempTypeDisplay").text(" °F");
-        $("#initialTemp").attr("placeholder", "°F");
-        $("#finalTemp").attr("placeholder", "°F");
+        setToFahrenheit();
     } else if($("input[id='KRadio']:checked").val() == "on"){
-        tempUnits = 'K'
-        $(".tempTypeDisplay").text(" °K")
-        $("#initialTemp").attr("placeholder", "°K");
-        $("#finalTemp").attr("placeholder", "°K");
+        setToKelvin();
     }
 }
 
@@ -34,22 +28,13 @@ $("input").keydown(function(e){
 
 //Temp Unit radios
 $("input[id=FRadio]").click(function(){
-        $(".tempTypeDisplay").text(" °F");
-        $("#initialTemp").attr("placeholder", "°F");
-        $("#finalTemp").attr("placeholder", "°F");
-        tempUnits = 'F'
+    setToFahrenheit();
 });
 $("input[id=CRadio]").click(function(){
-    $(".tempTypeDisplay").text(" °C")
-    $("#initialTemp").attr("placeholder", "°C");
-    $("#finalTemp").attr("placeholder", "°C");
-    tempUnits = 'C'
+    setToCelsius();
 });
 $("input[id=KRadio]").click(function(){
-    $(".tempTypeDisplay").text(" °K")
-    $("#initialTemp").attr("placeholder", "°K");
-    $("#finalTemp").attr("placeholder", "°K");
-    tempUnits = 'K'
+    setToKelvin();
 });
 $("input[id=calRadio]").click(function(){
     energyUnits = 'cal'
@@ -85,16 +70,18 @@ function calculate(){
         // calculate heat change per phase
         if(initialTemp < 0 && finalTemp < 0){
             iceDiff = finalTemp - initialTemp;
+            waterDiff = 0;
         } else if(initialTemp < 0){
             iceDiff = -initialTemp;
+            if(finalTemp <= 100){
+               waterDiff = finalTemp;
+            }
         } else{
             iceDiff = 0;
         }
         if(finalTemp <= 100){
             if(initialTemp > 0){
                 waterDiff = finalTemp - initialTemp;
-            } else {
-                waterDiff = finalTemp;
             }
             steamDiff = 0
         }
@@ -111,9 +98,6 @@ function calculate(){
             if (initialTemp < 100){
                 steamDiff = finalTemp - 100;
             }
-        }
-        if(finalTemp < 0){
-            waterDiff = 0;
         }
 
         // Round to 2 places for display
@@ -188,6 +172,26 @@ function calculate(){
 }
 
 //functions
+
+function setToKelvin(){
+    $(".tempTypeDisplay").text(" °K");
+    $("#initialTemp").attr("placeholder", "°K");
+    $("#finalTemp").attr("placeholder", "°K");
+    tempUnits = 'K'
+}
+function setToCelsius(){
+    $(".tempTypeDisplay").text(" °C");
+    $("#initialTemp").attr("placeholder", "°C");
+    $("#finalTemp").attr("placeholder", "°C");
+    tempUnits = 'C'
+}
+function setToFahrenheit(){
+    $(".tempTypeDisplay").text(" °F");
+    $("#initialTemp").attr("placeholder", "°F");
+    $("#finalTemp").attr("placeholder", "°F");
+    tempUnits = 'F'
+}
+
 function convertToCelsius(temp, tempUnits){
     if(tempUnits == 'F'){
         return (temp - 32) * (5 / 9);
