@@ -1,18 +1,19 @@
-var energyUnits = 'cal';
-var tempUnits = 'C';
+var energyUnits = "cal";
+var tempUnits = "C";
 
 //check for Navigation Timing API support
 if (!window.performance) {
-    alert("window.performance is not available in this browser.\n Please re-select unit types if you refresh the page");
+    alert("window.performance is not available in this browser.\n" +
+    "Please re-select unit types if you refresh the page");
 }
 
-if (window.performance.navigation.type == 1){
-    if($("input[id='JRadio']:checked").val() == "on"){
-        energyUnits = 'J';
+if (window.performance.navigation.type === 1){
+    if($("input[id='JRadio']:checked").val() === "on"){
+        energyUnits = "J";
     }
-    if($("input[id='FRadio']:checked").val() == "on"){
+    if($("input[id='FRadio']:checked").val() === "on"){
         setToFahrenheit();
-    } else if($("input[id='KRadio']:checked").val() == "on"){
+    } else if($("input[id='KRadio']:checked").val() === "on"){
         setToKelvin();
     }
 }
@@ -37,34 +38,41 @@ $("input[id=KRadio]").click(function(){
     setToKelvin();
 });
 $("input[id=calRadio]").click(function(){
-    energyUnits = 'cal'
+    energyUnits = "cal";
 });
 $("input[id=JRadio]").click(function(){
-    energyUnits = 'J'
+    energyUnits = "J";
 });
 
 function calculate(){
     try{
-        let mass = parseFloat($('#mass').val());
-        let initialTemp = parseFloat($("#initialTemp").val());
-        let finalTemp = parseFloat($("#finalTemp").val());
-        if(tempUnits == 'F'){
+        var mass = parseFloat($('#mass').val());
+        var initialTemp = parseFloat($("#initialTemp").val());
+        var finalTemp = parseFloat($("#finalTemp").val());
+        if(tempUnits == "F"){
             initialTemp = convertToCelsius(initialTemp, tempUnits);
             finalTemp = convertToCelsius(finalTemp, tempUnits);
-        } else if(tempUnits == 'K'){
+        } else if(tempUnits == "K"){
             initialTemp = convertToCelsius(initialTemp, tempUnits);
             finalTemp = convertToCelsius(finalTemp, tempUnits);
         }
-        let iceDiff;
-        let waterDiff;
-        let steamDiff;
+        var iceDiff;
+        var waterDiff;
+        var steamDiff;
     /* Calculate temperature variation for each phase */
-        //Keep lower value as initial temp since calculation is symmetrical
+        // Keep lower value as initial temp since calculation is symmetrical
         if(initialTemp > finalTemp){
             [initialTemp, finalTemp] = [finalTemp, initialTemp];
         }
+        // Except mass below 0
+        if (mass <= 0 ){
+            $(".result").text("Error: Invalid mass");
+            return;
+        }
+        // Except value below absolute 0
         if(initialTemp < -273.15){
-            $(".result").text("Error: Lower temperature is below absolute zero");
+            $(".result").text("Error: Lower temperature is " +
+            "below absolute zero");
             return;
         }
         // calculate heat change per phase
@@ -83,12 +91,12 @@ function calculate(){
             if(initialTemp > 0){
                 waterDiff = finalTemp - initialTemp;
             }
-            steamDiff = 0
+            steamDiff = 0;
         }
         if(finalTemp > 100){
             if(initialTemp > 100){
                 waterDiff = 0;
-                steamDiff  = finalTemp - initialTemp
+                steamDiff  = finalTemp - initialTemp;
                 }
             else if(initialTemp > 0){
                 waterDiff = 100 - initialTemp;
@@ -101,12 +109,13 @@ function calculate(){
         }
 
         // Round to 2 places for display
-        let initialTempr = initialTemp.toFixed(2);
-        let finalTempr = finalTemp.toFixed(2);
-        let iceDiffr = iceDiff.toFixed(2);
-        let waterDiffr = waterDiff.toFixed(2);
-        let steamDiffr = steamDiff.toFixed(2);
-        if(energyUnits == 'J'){
+        var initialTempr = initialTemp.toFixed(2);
+        var finalTempr = finalTemp.toFixed(2);
+        var iceDiffr = iceDiff.toFixed(2);
+        var waterDiffr = waterDiff.toFixed(2);
+        var steamDiffr = steamDiff.toFixed(2);
+        var hfwt, hvwt, hit, hwt, hst, hfwtr, hvwtr, hitr, hwtr, hstr;
+        if(energyUnits == "J"){
             var hfwt = mass * 334;
             var hvwt = mass * 2257;
             var hit = iceDiff * mass * 2.09;
@@ -132,7 +141,7 @@ function calculate(){
 
         let energyDiff;
         let energyTotal;
-        if(energyUnits == 'J'){
+        if(energyUnits == "J"){
             energyDiff = (hit + hfwt + hwt + hvwt + hst).toFixed(2);
             energyTotal = delimitNumbers(energyDiff);
             var sh = {
@@ -177,25 +186,25 @@ function setToKelvin(){
     $(".tempTypeDisplay").text(" °K");
     $("#initialTemp").attr("placeholder", "°K");
     $("#finalTemp").attr("placeholder", "°K");
-    tempUnits = 'K'
+    tempUnits = "K"
 }
 function setToCelsius(){
     $(".tempTypeDisplay").text(" °C");
     $("#initialTemp").attr("placeholder", "°C");
     $("#finalTemp").attr("placeholder", "°C");
-    tempUnits = 'C'
+    tempUnits = "C"
 }
 function setToFahrenheit(){
     $(".tempTypeDisplay").text(" °F");
     $("#initialTemp").attr("placeholder", "°F");
     $("#finalTemp").attr("placeholder", "°F");
-    tempUnits = 'F'
+    tempUnits = "F"
 }
 
 function convertToCelsius(temp, tempUnits){
-    if(tempUnits == 'F'){
+    if(tempUnits == "F"){
         return (temp - 32) * (5 / 9);
-    } else if(tempUnits == 'K'){
+    } else if(tempUnits == "K"){
         return (temp - 273.15);
     }
 }
