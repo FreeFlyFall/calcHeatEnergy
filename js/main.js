@@ -1,12 +1,12 @@
 var energyUnits = "cal";
 var tempUnits = "C";
 
-//check for Navigation Timing API support
+// Check for Navigation Timing API support
 if (!window.performance) {
     alert("window.performance is not available in this browser.\n" +
     "Please re-select unit types if you refresh the page");
 }
-
+// Set UI for variables saved through refresh
 if (window.performance.navigation.type === 1){
     if($("input[id='JRadio']:checked").val() === "on"){
         energyUnits = "J";
@@ -18,6 +18,7 @@ if (window.performance.navigation.type === 1){
     }
 }
 
+// Handle submit requests
 $("button").click(function(){
     calculate();
 });
@@ -46,9 +47,12 @@ $("input[id=JRadio]").click(function(){
 
 function calculate(){
     try{
+        // Parse inputs
         var mass = parseFloat($('#mass').val());
         var initialTemp = parseFloat($("#initialTemp").val());
         var finalTemp = parseFloat($("#finalTemp").val());
+
+        // Convert temperature variables to celcius for constant calculations
         if(tempUnits == "F"){
             initialTemp = convertToCelsius(initialTemp, tempUnits);
             finalTemp = convertToCelsius(finalTemp, tempUnits);
@@ -56,26 +60,33 @@ function calculate(){
             initialTemp = convertToCelsius(initialTemp, tempUnits);
             finalTemp = convertToCelsius(finalTemp, tempUnits);
         }
-        var iceDiff;
-        var waterDiff;
-        var steamDiff;
-    /* Calculate temperature variation for each phase */
+
         // Keep lower value as initial temp since calculation is symmetrical
         if(initialTemp > finalTemp){
             [initialTemp, finalTemp] = [finalTemp, initialTemp];
         }
-        // Except mass below 0
-        if (mass <= 0 ){
+
+        // Exception: mass below 0
+        if (mass <= 0 || isNaN(mass)){
             $(".result").text("Error: Invalid mass");
             return;
         }
-        // Except value below absolute 0
+        // Exception: temps which aren't a number
+        if (isNaN(initialTemp) || isNaN(finalTemp)){
+            $(".result").text("Error: Invalid temperature");
+            return;
+        }
+        // Exception: temperature below absolute 0
         if(initialTemp < -273.15){
             $(".result").text("Error: Lower temperature is " +
             "below absolute zero");
             return;
         }
-        // calculate heat change per phase
+
+        var iceDiff = 0;
+        var waterDiff = 0;
+        var steamDiff = 0;
+        // Calculate heat change per phase
         if(initialTemp < 0 && finalTemp < 0){
             iceDiff = finalTemp - initialTemp;
             waterDiff = 0;
@@ -88,13 +99,13 @@ function calculate(){
             iceDiff = 0;
         }
         if(finalTemp <= 100){
-            if(initialTemp > 0){
+            if(initialTemp >= 0){
                 waterDiff = finalTemp - initialTemp;
             }
             steamDiff = 0;
         }
         if(finalTemp > 100){
-            if(initialTemp > 100){
+            if(initialTemp >= 100){
                 waterDiff = 0;
                 steamDiff  = finalTemp - initialTemp;
                 }
@@ -108,12 +119,16 @@ function calculate(){
             }
         }
 
-        // Round to 2 places for display
+        // Round for display
         var initialTempr = initialTemp.toFixed(2);
         var finalTempr = finalTemp.toFixed(2);
         var iceDiffr = iceDiff.toFixed(2);
         var waterDiffr = waterDiff.toFixed(2);
         var steamDiffr = steamDiff.toFixed(2);
+        /* Where h = heat delta, f = heat of fusion
+         * v = heat of vaporization, i = ice
+         * w = water, s = steam, t = total, r = rounded
+         */
         var hfwt, hvwt, hit, hwt, hst, hfwtr, hvwtr, hitr, hwtr, hstr;
         if(energyUnits == "J"){
             var hfwt = mass * 334;
@@ -121,43 +136,48 @@ function calculate(){
             var hit = iceDiff * mass * 2.09;
             var hwt = waterDiff * mass * 4.18;
             var hst = steamDiff * mass * 2.09;
-            var hfwtr = (mass * 334).toFixed(2);
-            var hvwtr = (mass * 2257).toFixed(2);
-            var hitr = (iceDiff * mass * 2.09).toFixed(2);
-            var hwtr = (waterDiff * mass * 4.18).toFixed(2);
-            var hstr = (steamDiff * mass * 2.09).toFixed(2);
         } else {
             var hfwt = mass * 334 * 0.239006;
             var hvwt = mass * 2257 * 0.239006;
             var hit = iceDiff * mass * 2.09 * 0.239006;
             var hwt = waterDiff * mass * 4.18 * 0.239006;
             var hst = steamDiff * mass * 2.09 * 0.239006;
-            var hfwtr = (mass * 334 * 0.239006).toFixed(2);
-            var hvwtr = (mass * 2257 * 0.239006).toFixed(2);
-            var hitr = (iceDiff * mass * 2.09 * 0.239006).toFixed(2);
-            var hwtr = (waterDiff * mass * 4.18 * 0.239006).toFixed(2);
-            var hstr = (steamDiff * mass * 2.09 * 0.239006).toFixed(2);
         }
 
-        let energyDiff;
-        let energyTotal;
+        // Reset heat of fusion/vaporization variables if the transition would never have occurred.
+        if(initialTemp >= 0 || finalTemp <= 0){
+            hfwt = 0;
+        }
+        if(finalTemp <= 100 || initialTemp >= 100){
+            hvwt = 0;
+        }
+
+        // Set rounded variables for display, delimit answer
+        var hfwtr = hfwt.toFixed(2);
+        var hvwtr = hvwt.toFixed(2);
+        var hitr = hit.toFixed(2);
+        var hwtr = hwt.toFixed(2);
+        var hstr = hst.toFixed(2);
+        let energyDiff = (hit + hfwt + hwt + hvwt + hst).toFixed(2);
+        let energyTotal = delimitNumbers(energyDiff);
+
+        // Where sh = specific heat, set sh variables depending on the energy units
         if(energyUnits == "J"){
-            energyDiff = (hit + hfwt + hwt + hvwt + hst).toFixed(2);
-            energyTotal = delimitNumbers(energyDiff);
             var sh = {
                 i: 2.09,
                 w: 4.18,
                 s: 2.09
             }
         } else{
-            energyDiff = (hit + hfwt + hwt + hvwt + hst).toFixed(2);
-            energyTotal = delimitNumbers(energyDiff);
             var sh = {
+                // Round for display
                 i: (2.09 * 0.239006).toFixed(2),
                 w: (4.18 * 0.239006).toFixed(2),
                 s: (2.09 * 0.239006).toFixed(2)
             }
         }
+
+        // Display result
         $(".result").html(`
             <ul style="list-style: none;" class="card-footer card-header border-dark">
                 <div class="cmb"><strong>Energy: ${energyTotal} ${energyUnits}</strong></div>
@@ -180,8 +200,7 @@ function calculate(){
     }
 }
 
-//functions
-
+// Set UI per radio selections
 function setToKelvin(){
     $(".tempTypeDisplay").text(" °K");
     $("#initialTemp").attr("placeholder", "°K");
