@@ -159,7 +159,7 @@ function calculate(){
             }
         }
         $(".result").html(`
-            <ul style="list-style: none;">
+            <ul style="list-style: none;" class="card-footer card-header border-dark">
                 <div class="cmb"><strong>Energy: ${energyTotal} ${energyUnits}</strong></div>
                 <div class="cmb">Min: ${initialTempr} °C, Max: ${finalTempr} °C </div>
                 <div>ΔT as ice: ${iceDiffr} °C</div>
